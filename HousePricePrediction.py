@@ -1,15 +1,10 @@
-from email.mime import image
 import os
-from turtle import shape
-from unicodedata import numeric 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import tensorflow as tf
 from matplotlib import pyplot as plt
 from tensorflow.keras import layers as ksl
 import numpy as np
-import sklearn as sk
 import pandas as pd
-import cv2 as cv
 
 class Model():
     def __init__(self,loadWeights = False,loadModel = False,weightAddr = None,modelAddr=None):
@@ -22,13 +17,8 @@ class Model():
             self.loadWeights(weightAddr)
         else :
             print('[Error] incompatible inputs !')
-        self.bedroom = []
-        self.bathroom = []
-        self.frontal = []
-        self.kitchen =  [] 
-        self.txtFeatur = []
+
         self.const = None
-        self.label = []
         
 
 
@@ -133,3 +123,16 @@ class Model():
     def relu(x):
         return tf.maximum( 0.0,x)
    
+    @staticmethod
+    def plotHistory(Hist):
+        # plot History
+        plt.plot(Hist.history['accuracy'])
+        plt.plot(Hist.history['val_accuracy'])
+        plt.title('model accuracy')
+        # plt.savefig(r'Plots/accuracy.png')
+        plt.show()
+        plt.plot(Hist.history['loss'])
+        plt.plot(Hist.history['val_loss'])
+        plt.title('model loss')
+        # plt.savefig(r'Plots/loss.png')
+        plt.show()
