@@ -1,4 +1,7 @@
-import os 
+from email.mime import image
+import os
+from turtle import shape
+from unicodedata import numeric 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import tensorflow as tf
 from matplotlib import pyplot as plt
@@ -29,8 +32,7 @@ class Model():
         self.label = []
         self.const = []
         self.label = []
-        self.pred = self.predict(xTest)
-        pass
+        
     def split(self):
         split = sk.modelselection.train_test_split(self.bedroom,self.bathroom,self.frontal,self.kitchen,self.txtFeatur,self.label,test_size = 0.2)
         return split
@@ -134,8 +136,16 @@ class Model():
         out = ksl.Dense(1,'linear')(out)
         net = tf.keras.Model(inputs = [inpIm1,inpIm2,inpIm3,inpIm4,inpTxtFeatures],outputs = out)
         return net
-    def predict():
-        pass
+    def predict(self,inputList):
+        numericFeatur = inputList[4:]
+        numericFeatur = pd.DataFrame(numericFeatur)
+        max = numericFeatur.max()
+        numericFeatur = numericFeatur/max
+        images = inputList[:4]
+        images = [self.preProcess(im) for im in images]
+        pred = self.net.predict(np.concatenate((images,numericFeatur.to_numpy())))
+        return pred*self.const
+
     def saveModel(self):
         self.net.save('./Models/model.h5')
         self.net.save_weights('./Models/modelWeights.h5')
