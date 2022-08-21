@@ -1,6 +1,7 @@
 import os 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import tensorflow as tf
+from matplotlib import pyplot as plt
 from tensorflow.keras import layers as ksl
 import numpy as np
 import sklearn as sk
@@ -28,6 +29,7 @@ class Model():
         self.label = []
         self.const = []
         self.label = []
+        self.pred = self.predict(xTest)
         pass
     def split(self):
         split = sk.modelselection.train_test_split(self.bedroom,self.bathroom,self.frontal,self.kitchen,self.txtFeatur,self.label,test_size = 0.2)
@@ -68,8 +70,7 @@ class Model():
     def train(self,e,b):
         hist = self.net.fit([self.bedroom,self.bathroom,self.frontal,self.kitchen,self.txtFeatur],self.label,epochs = e,batch_size = b)
         return hist
-    def plotHistory(H):
-        pass
+
     def buildModel(self):
         inpIm1 = ksl.Input((128,128,3),name = 'image1Input')
         inpIm2 = ksl.Input((128,128,3),name = 'image2Input')
@@ -157,6 +158,20 @@ class Model():
     @staticmethod
     def relu(x):
         return tf.maximum( 0.0,x)
+    @staticmethod
+    def plotHistory(Hist):
+        # plot History
+        plt.plot(Hist.history['accuracy'])
+        plt.plot(Hist.history['val_accuracy'])
+        plt.title('model accuracy')
+        # plt.savefig(r'Plots/accuracy.png')
+        plt.show()
+        plt.plot(Hist.history['loss'])
+        plt.plot(Hist.history['val_loss'])
+        plt.title('model loss')
+        # plt.savefig(r'Plots/loss.png')
+        plt.show()
+
 model = Model()
 txtPath = r'/home/alifathi/Documents/AI/Git/House price prediction/Data/HousesInfo.txt'
 imgPath = r'/home/alifathi/Documents/AI/Git/House price prediction/Data/house_dataset'
