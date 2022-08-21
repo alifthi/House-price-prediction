@@ -1,27 +1,14 @@
 import numpy as np
 from glob import glob
+import cv2 as cv
+import sklearn as sk
 class utils():
-    def __init__(self) -> None:
-        
-    def loadData():
-        pass
+    def __init__(self,txtPath,imagePath) -> None:
+        self.Data = self.loadData(txtPath,imagePath)
 
-    @staticmethod
-    def plotHistory(Hist):
-        # plot History
-        plt.plot(Hist.history['accuracy'])
-        plt.plot(Hist.history['val_accuracy'])
-        plt.title('model accuracy')
-        # plt.savefig(r'Plots/accuracy.png')
-        plt.show()
-        plt.plot(Hist.history['loss'])
-        plt.plot(Hist.history['val_loss'])
-        plt.title('model loss')
-        # plt.savefig(r'Plots/loss.png')
-        plt.show()
 
     def split(self):
-        split = sk.modelselection.train_test_split(self.bedroom,self.bathroom,self.frontal,self.kitchen,self.txtFeatur,self.label,test_size = 0.2)
+        split = sk.modelselection.train_test_split(self.Data,test_size = 0.2)
         return split
     def loadData(self,txtPath,imgPath):
         self.txtFeatur = pd.DataFrame([[float(t) for t in x.split('\n')[0].split(' ')] for x in open(txtPath).readlines()])
@@ -47,14 +34,15 @@ class utils():
                 kitchen.append(self.preProcess(cv.imread(p)))
             if i%500 == 0:
                 print('[INFO] {}th image loaded'.format(i))
-        self.bedroom = np.array(self.bedroom)
-        self.bathroom = np.array(self.bathroom)
-        self.frontal = np.array(self.frontal)
-        self.kitchen = np.array(self.kitchen)
-        np.concatenate((bedroom,bathroom,frontal,kitchen))
+        bedroom = np.array(self.bedroom)
+        bathroom = np.array(self.bathroom)
+        frontal = np.array(self.frontal)
+        kitchen = np.array(self.kitchen)
+        return np.concatenate((bedroom,bathroom,frontal,kitchen))
+    
     @staticmethod
     def preProcess(image):
         image = cv.resize(image,(128,128))
         image = cv.cvtColor(image,cv.COLOR_BGR2RGB)
         image = image/255.0
-    self.Data = [self.bedroom,self.bathroom,self.frontal,self.kitchen,self.txtFeatur]
+        
