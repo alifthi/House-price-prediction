@@ -10,7 +10,6 @@ import numpy as np
 import sklearn as sk
 import pandas as pd
 import cv2 as cv
-from glob import glob
 
 class Model():
     def __init__(self,loadWeights = False,loadModel = False,weightAddr = None,modelAddr=None):
@@ -26,51 +25,21 @@ class Model():
         self.bedroom = []
         self.bathroom = []
         self.frontal = []
-        self.kitchen =[] 
+        self.kitchen =  [] 
         self.txtFeatur = []
         self.const = None
         self.label = []
-        self.const = []
-        self.label = []
         
-    def split(self):
-        split = sk.modelselection.train_test_split(self.bedroom,self.bathroom,self.frontal,self.kitchen,self.txtFeatur,self.label,test_size = 0.2)
-        return split
-    def loadData(self,txtPath,imgPath):
-        self.txtFeatur = pd.DataFrame([[float(t) for t in x.split('\n')[0].split(' ')] for x in open(txtPath).readlines()])
-        self.txtFeatur.T.loc[[0,1,2,3],:]
-        self.label = self.txtFeatur.loc[:,4] 
-        self.txtFeatur = self.txtFeatur.T.loc[[0,1,2,3],:].T 
-        max = self.txtFeatur.max()
-        self.txtFeatur = self.txtFeatur/max
-        self.const = np.max(self.label)
-        self.label = self.label/self.const
 
 
-        for i,p in enumerate(glob(imgPath+'/*')):
-            place = p.split('/')[-1].split('.')[0].split('_')[1]
-            if place == 'bedroom':
-                self.bedroom.append(self.preProcess(cv.imread(p)))
-            elif place == 'bathroom':
-                self.bathroom.append(self.preProcess(cv.imread(p)))
-            elif place == 'frontal':
-                self.frontal.append(self.preProcess(cv.imread(p)))
-            else:
-                self.kitchen.append(self.preProcess(cv.imread(p)))
-            if i%500 == 0:
-                print('[INFO] {}th image loaded'.format(i))
-        self.bedroom = np.array(self.bedroom)
-        self.bathroom = np.array(self.bathroom)
-        self.frontal = np.array(self.frontal)
-        self.kitchen = np.array(self.kitchen)
 
     def myLoss(y_true,y_pred):
         return tf.reduce_mean(tf.square(y_true - y_pred),axis = -1)
     def compile(self,loss,metrics,optim):
         self.net.compile(loss = loss,optimizer = optim ,metrics = metrics)
 
-    def train(self,e,b):
-        hist = self.net.fit([self.bedroom,self.bathroom,self.frontal,self.kitchen,self.txtFeatur],self.label,epochs = e,batch_size = b)
+    def train(self,e,b,Data):
+        hist = self.net.fit(Data,self.label,epochs = e,batch_size = b)
         return hist
 
     def buildModel(self):
@@ -158,33 +127,9 @@ class Model():
         net = tf.kerasl.models.load_model(modelAddr)
         return net
 
-    @staticmethod
-    def preProcess(image):
-        image = cv.resize(image,(128,128))
-        image = cv.cvtColor(image,cv.COLOR_BGR2RGB)
-        image = image/255.0
-
+ 
         return image
     @staticmethod
     def relu(x):
         return tf.maximum( 0.0,x)
-    @staticmethod
-    def plotHistory(Hist):
-        # plot History
-        plt.plot(Hist.history['accuracy'])
-        plt.plot(Hist.history['val_accuracy'])
-        plt.title('model accuracy')
-        # plt.savefig(r'Plots/accuracy.png')
-        plt.show()
-        plt.plot(Hist.history['loss'])
-        plt.plot(Hist.history['val_loss'])
-        plt.title('model loss')
-        # plt.savefig(r'Plots/loss.png')
-        plt.show()
-
-model = Model()
-txtPath = r'/home/alifathi/Documents/AI/Git/House price prediction/Data/HousesInfo.txt'
-imgPath = r'/home/alifathi/Documents/AI/Git/House price prediction/Data/house_dataset'
-model.loadData(txtPath=txtPath,imgPath=imgPath)
-model.compile(loss = 'mse',metrics = ['mse'],optim = tf.keras.optimizers.Adam(learning_rate = 0.01))
-model.train(1,512)
+   
