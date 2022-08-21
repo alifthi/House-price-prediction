@@ -15,3 +15,7 @@ and as numerical inputs model recive 4 inputs such number of rooms and etc.
 # preprocessing
 
 For numerical data i just normalize data and for images, i normalize images and resize to (128,128)
+
+# Data reference
+
+download data from this repo https://github.com/emanhamed/Houses-dataset
