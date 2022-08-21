@@ -9,8 +9,16 @@ import cv2 as cv
 from glob import glob
 
 class Model():
-    def __init__(self):
-        self.net = self.buildModel()
+    def __init__(self,loadWeights = False,loadModel = False,weightAddr = None,modelAddr=None):
+        if loadModel:
+            self.net = self.loadModel(modelAddr)
+        elif not(loadModel and loadWeights):
+            self.net = self.buildModel()
+        elif loadWeights:
+            self.net = self.loadWeights()
+            self.loadWeights(weightAddr)
+        else :
+            print('[Error] incompatible inputs !')
         self.bedroom = []
         self.bathroom = []
         self.frontal = []
@@ -127,10 +135,18 @@ class Model():
         return net
     def predict():
         pass
-    def saveModel():
-        pass
-    def loadModel():
-        pass
+    def saveModel(self):
+        self.net.save('./Models/model.h5')
+        self.net.save_weights('./Models/modelWeights.h5')
+    def loadWeights(self,weightAddr):
+        net = self.buildModel()
+        net.load_weghts(weightAddr)
+        return net
+    @staticmethod
+    def loadModel(modelAddr):
+        net = tf.kerasl.models.load_model(modelAddr)
+        return net
+
     @staticmethod
     def preProcess(image):
         image = cv.resize(image,(128,128))
