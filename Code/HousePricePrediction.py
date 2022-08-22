@@ -126,13 +126,9 @@ class Model():
     @staticmethod
     def plotHistory(Hist):
         # plot History
-        plt.plot(Hist.history['accuracy'])
-        plt.plot(Hist.history['val_accuracy'])
-        plt.title('model accuracy')
-        # plt.savefig(r'Plots/accuracy.png')
-        plt.show()
         plt.plot(Hist.history['loss'])
-        plt.plot(Hist.history['val_loss'])
         plt.title('model loss')
-        # plt.savefig(r'Plots/loss.png')
+        plt.show()
+        plt.plot(Hist.history['mse'])
+        plt.title('model mse')
         plt.show()
